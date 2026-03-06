@@ -1,0 +1,62 @@
+{
+  "manifest_version": 3,
+  "name": "PhishLens",
+  "version": "2.0.0",
+  "description": "AI-powered phishing detection across Gmail, Outlook, Yahoo, iCloud, WhatsApp & Telegram — runs entirely in-browser with ONNX Runtime Web. Privacy-first, no backend, no API calls.",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "48": "assets/icon48.png",
+      "128": "assets/icon128.png"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.google.com/*",
+        "https://outlook.live.com/*",
+        "https://outlook.office.com/*",
+        "https://outlook.office365.com/*",
+        "https://mail.yahoo.com/*",
+        "https://www.icloud.com/mail/*",
+        "https://web.whatsapp.com/*",
+        "https://web.telegram.org/*"
+      ],
+      "js": [
+        "lib/ort.min.js",
+        "lib/tokenizer.js",
+        "utils/ai_inference.js",
+        "content.js"
+      ],
+      "css": [
+        "styles/phishlens.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "assets/icon16.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "model/*",
+        "lib/*.wasm",
+        "lib/*.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ]
+}
