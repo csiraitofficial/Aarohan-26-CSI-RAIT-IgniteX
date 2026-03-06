@@ -1,64 +1,168 @@
 # Aarohan-26-CSI-RAIT-IgniteX
 
-# ( still one more extension need to be added )
+# PhishLens 🛡️
 
-A minimal Chrome extension that reads messages from WhatsApp Web.
+**AI-powered phishing detection for Gmail — runs entirely in-browser.**
 
-## Files
+PhishLens is a Chrome Extension (Manifest V3) that detects phishing emails inside Gmail using hybrid AI + rule-based analysis. No backend, no API calls — everything runs locally on your machine.
 
+## Features
+
+- 🤖 **AI-powered detection** — Real DistilBERT model via ONNX Runtime Web
+- 🔍 **Rule-based analysis** — urgency, fear, authority impersonation, suspicious URL detection
+- 📊 **Risk scoring** — combines all signals into low/medium/high risk per sentence
+- 💬 **Explainable results** — hover over highlighted sentences for detailed reasoning
+- 🎨 **Beautiful UI** — color-coded banner + inline sentence highlights + animated tooltips
+- 🔒 **Privacy-first** — zero network requests, all processing on-device
+
+## Setup
+
+### Prerequisites
+
+- **Python 3.8+** with pip
+- **Google Chrome** browser
+
+### Step 1: Export the ONNX Model
+
+Install Python dependencies and run the export script:
+
+```bash
+pip install optimum[onnxruntime] transformers torch
+python model/mod.py
 ```
-wa-reader/
-├── manifest.json
-├── content.js
-├── popup.html
-└── popup.js
-```
 
-## Install
+This downloads the `cybersectony/phishing-email-detection-distilbert_v2.4.1` model from Hugging Face and exports:
+- `model/model.onnx` — the ONNX model (~67 MB)
+- `model/vocab.json` — tokenizer vocabulary
+- `model/config.json` — label mapping
 
-1. Unzip `wa-reader.zip`
-2. Go to `chrome://extensions`
-3. Enable **Developer Mode** (top right toggle)
-4. Click **Load unpacked** → select the `wa-reader` folder
+### Step 2: Load the Extension
 
-## Usage
+1. Open **chrome://extensions** in Chrome
+2. Enable **Developer mode** (top-right toggle)
+3. Click **Load unpacked** → select the `Pishlens` folder
+4. Navigate to **Gmail** → open any email
+5. PhishLens will automatically scan and show results
 
-1. Open [web.whatsapp.com](https://web.whatsapp.com)
-2. Click into any chat
-3. Click the extension icon in the toolbar
-4. Click **READ MESSAGES**
-
-Messages are displayed with direction (sent/received) and timestamp.
-
-## Features 
-
-Gmail : by using regex will anylize mail id also if the pattern is not valid of email.id then also it will raise flag fo highlight it 
-
-give toggle to turn on and off extension 
-and if user want to turn offf extension for specific site lik whatsapp and telegram also that he will turn off 
-
-machine.
-Whats app web 
-Telegram 
-Email
-Outlook 
-yahoo mail 
-icloud mail 
+> **Note:** The extension works with or without the ONNX model. Without the model files, it falls back to keyword-based heuristics.
 
 ## How It Works
 
-- `content.js` — injected into WhatsApp Web, queries the DOM for message elements and returns text, time, and direction
-- `popup.js` — sends a message to the content script and renders the results in the popup
+```
+Email opened → Extract text → Split sentences → For each sentence:
+  ├─ ONNX model inference (DistilBERT phishing probability)
+  ├─ Urgency keyword detection
+  ├─ Fear/threat language detection
+  ├─ Authority impersonation detection
+  ├─ Suspicious URL analysis
+  └─ Combined risk score → Highlight + Explain
+```
 
-## Notes
+### Risk Scoring
 
-- WhatsApp Web periodically updates its CSS class names. If messages stop showing, the selectors in `content.js` may need updating.
-- Only reads messages currently visible in the chat window (no history scrolling).
+| Signal | Weight |
+|--------|--------|
+| ONNX high probability (>0.75) | +3 |
+| Urgency language | +2 |
+| Fear/threat language | +2 |
+| Suspicious URL | +3 |
+| Authority mismatch | +2 |
 
-## Permissions
+| Total Score | Risk Level |
+|-------------|------------|
+| 0–2 | 🟢 Low |
+| 3–5 | 🟡 Medium |
+| 6+ | 🔴 High |
 
-| Permission | Reason |
-|---|---|
-| `activeTab` | Read the current tab |
-| `scripting` | Inject content script |
-| `web.whatsapp.com` | Limit access to WA Web only |
+## Test Emails
+
+### 🔴 Phishing Email (expect red banner)
+
+Send this to yourself and open it in Gmail:
+
+```
+Subject: URGENT: Your account has been suspended
+
+Dear user,
+
+Your account has been suspended due to suspicious activity.
+You must verify your identity immediately to avoid permanent deletion.
+
+Click here to verify: http://secure-banking.xyz/verify?id=12345
+
+If you do not act now, legal action will be taken against you.
+This is your final warning from the HR department.
+
+Regards,
+Account Security Team
+```
+
+### 🟡 Mildly Suspicious Email (expect yellow banner)
+
+```
+Subject: Important: Update your account information
+
+Hi there,
+
+We noticed some changes to your account.
+Please update your information at your earliest convenience.
+
+Visit our website to update: https://bit.ly/acct-update
+
+Thank you,
+Support Team
+```
+
+### 🟢 Safe Email (expect green banner)
+
+```
+Subject: Team lunch on Friday
+
+Hey everyone,
+
+Just a reminder that we have a team lunch this Friday at 12:30 PM
+at the usual place. Please let me know if you have any dietary restrictions.
+
+Looking forward to seeing everyone there!
+
+Best,
+Sarah
+```
+
+## Project Structure
+
+```
+Pishlens/
+├── manifest.json            # MV3 manifest (CSP + WASM support)
+├── content.js               # Main script (all modules in single IIFE)
+├── styles/
+│   └── phishlens.css        # Scoped CSS (phishlens-* prefix)
+├── assets/
+│   ├── icon16.png           # Extension icons
+│   ├── icon48.png
+│   └── icon128.png
+├── model/
+│   ├── mod.py               # Python script to export ONNX model
+│   ├── model.onnx           # DistilBERT model (generated by mod.py)
+│   ├── vocab.json           # Tokenizer vocabulary (generated by mod.py)
+│   ├── config.json          # Model config (generated by mod.py)
+│   └── README.js            # Legacy placeholder
+├── lib/
+│   ├── ort.min.js           # ONNX Runtime Web v1.17.0
+│   ├── ort-wasm-simd.wasm   # WASM backend (SIMD)
+│   ├── ort-wasm.wasm        # WASM backend (fallback)
+│   ├── tokenizer.js         # WordPiece tokenizer for DistilBERT
+│   └── README.js            # Legacy placeholder
+└── README.md                # This file
+```
+
+## Privacy
+
+PhishLens is designed with a privacy-first architecture:
+
+- ❌ No backend server
+- ❌ No external API calls
+- ❌ No data collection or analytics
+- ❌ No transmission of email content
+- ✅ All analysis runs locally on your device
+- ✅ Email content stays in your browser
