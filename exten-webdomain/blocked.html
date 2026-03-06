@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AegisAI — Threat Neutralized</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg-darker: #020617;
+            --accent-primary: #38bdf8;
+            --accent-danger: #ef4444;
+            --accent-secondary: #10b981;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: rgba(239, 68, 68, 0.3);
+            --glass-blur: blur(20px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-darker);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* WebGL Background Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        /* Ambient Danger Glow */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            border: 4px solid rgba(239, 68, 68, 0.2);
+            pointer-events: none;
+            animation: threat-pulse 2s ease-in-out infinite;
+            box-shadow: inset 0 0 100px rgba(239, 68, 68, 0.1);
+        }
+
+        @keyframes threat-pulse {
+
+            0%,
+            100% {
+                border-color: rgba(239, 68, 68, 0.1);
+            }
+
+            50% {
+                border-color: rgba(239, 68, 68, 0.4);
+            }
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            z-index: 10;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(239, 68, 68, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-danger), transparent);
+            box-shadow: 0 0 15px var(--accent-danger);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .shield-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            color: var(--accent-danger);
+            filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.4));
+        }
+
+        .badge-blocked {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 99px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .status-blink {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-danger);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-danger);
+            animation: blink 1.5s step-end infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            line-height: 1.1;
+        }
+
+        h1 span {
+            color: var(--accent-danger);
+        }
+
+        .desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .domain-display {
+            background: rgba(2, 6, 23, 0.5);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 32px 0;
+            text-align: center;
+        }
+
+        .domain-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        #blocked-url {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #fca5a5;
+            word-break: break-all;
+        }
+
+        .intelligence-grid {
+            margin-bottom: 32px;
+        }
+
+        .grid-header {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .threat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .threat-item {
+            background: rgba(239, 68, 68, 0.05);
+            border-left: 3px solid var(--accent-danger);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tip-box {
+            background: rgba(56, 189, 248, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+            color: #7dd3fc;
+            line-height: 1.5;
+            margin-bottom: 32px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-safe {
+            background: var(--text-primary);
+            color: var(--bg-darker);
+            border: none;
+        }
+
+        .btn-safe:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-risky {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--accent-danger);
+        }
+
+        .btn-risky:hover {
+            background: rgba(239, 68, 68, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .footer b {
+            color: var(--accent-primary);
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 640px) {
+            .glass-card {
+                padding: 32px 24px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        <div class="glass-card">
+            <div class="card-accent"></div>
+
+            <div class="header">
+                <div class="shield-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <path d="M12 8v4"></path>
+                        <path d="M12 16h.01"></path>
+                    </svg>
+                </div>
+
+                <div class="badge-blocked">
+                    <div class="status-blink"></div>
+                    Vector Identified & Isolated
+                </div>
+
+                <h1>Access <span>Denied</span></h1>
+                <p class="desc">AegisAI intelligence has identified high-confidence phishing patterns on this
+                    destination. Navigation suspended.</p>
+            </div>
+
+            <div class="domain-display">
+                <div class="domain-label">Isolated URL Vector</div>
+                <div id="blocked-url">...</div>
+            </div>
+
+            <div class="intelligence-grid">
+                <div class="grid-header">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Structural Analysis Log
+                </div>
+                <div class="threat-list" id="flags-list">
+                    <div class="threat-item"><span>Neural sequence processing...</span></div>
+                </div>
+            </div>
+
+            <div class="tip-box" id="edu-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                <div id="edu-text">This domain uses structural obfuscation typical of credential harvesting operations.
+                    Avoid all interaction.</div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-safe" id="btn-back">⬅ Return to Safety</button>
+                <button class="btn btn-risky" id="btn-proceed">Bypass Shield (Danger)</button>
+            </div>
+        </div>
+
+        <p class="footer">Securely Intercepted by <b>AEGIS AI DEFENSE</b> · Local Core v3.0</p>
+    </div>
+
+    <script>
+        // WebGL Background
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let w, h;
+        const setSize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
+        window.addEventListener('resize', setSize);
+        setSize();
+
+        const dots = Array(40).fill().map(() => ({
+            x: Math.random() * w, y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4
+        }));
+
+        const draw = () => {
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.08)';
+            dots.forEach((d, i) => {
+                d.x = (d.x + d.vx + w) % w; d.y = (d.y + d.vy + h) % h;
+                ctx.beginPath(); ctx.arc(d.x, d.y, 2, 0, Math.PI * 2); ctx.fill();
+                dots.slice(i + 1).forEach(d2 => {
+                    const dist = Math.hypot(d.x - d2.x, d.y - d2.y);
+                    if (dist < 150) { ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(d2.x, d2.y); ctx.lineWidth = 1 - dist / 150; ctx.stroke(); }
+                });
+            });
+            requestAnimationFrame(draw);
+        };
+        draw();
+
+        // Data Injection
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const raw = params.get('data');
+            if (raw) {
+                const res = JSON.parse(decodeURIComponent(raw));
+                document.getElementById('blocked-url').textContent = res.url || 'Unknown Vector';
+
+                const icons = {
+                    suspicious_tld: '🔴', ip_address: '🌐', many_subdomains: '📛',
+                    suspicious_keywords: '🔑', brand_impersonation: '🎭', homograph: '🎭'
+                };
+
+                const list = document.getElementById('flags-list');
+                if (res.flags && res.flags.length) {
+                    list.innerHTML = res.flags.slice(0, 4).map(f => `
+                        <div class="threat-item">
+                            <span>${icons[f.type] || '⚠️'}</span>
+                            <span>${f.text}</span>
+                        </div>
+                    `).join('');
+                }
+
+                const eduMap = {
+                    homograph: 'Character spoofing detected. This domain uses lookalike characters from other scripts to impersonate a legitimate site.',
+                    brand_impersonation: 'Brand collision detected. This domain is attempting to visually clone a known legitimate institution.',
+                    blocklist: 'Hard blackhole match. This domain is confirmed malicious in the community database.'
+                };
+                const spec = (res.flags || []).find(f => eduMap[f.type]);
+                if (spec) document.getElementById('edu-text').textContent = eduMap[spec.type];
+            }
+        } catch (e) { }
+
+        document.getElementById('btn-back').onclick = () => {
+            // Try to go back; if no history, navigate to Gmail inbox
+            if (document.referrer && !document.referrer.includes(location.origin)) {
+                history.back();
+            } else {
+                window.location.href = 'https://mail.google.com/mail/';
+            }
+        };
+        document.getElementById('btn-proceed').onclick = () => {
+            const params = new URLSearchParams(window.location.search);
+            const raw = JSON.parse(decodeURIComponent(params.get('data') || '{}'));
+            if (raw.url) { sessionStorage.setItem('aegis_bypass_' + raw.url, '1'); window.location.href = raw.url; }
+        };
+    </script>
+</body>
+
+</html>
