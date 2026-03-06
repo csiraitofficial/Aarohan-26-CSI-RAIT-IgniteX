@@ -1,6 +1,6 @@
 # Aarohan-26-CSI-RAIT-IgniteX
 
-# PhishLens 🛡️
+# Aegis AI 🛡️
 
 **AI-powered phishing detection for Gmail — runs entirely in-browser.**
 
