@@ -30,6 +30,21 @@ wa-reader/
 
 Messages are displayed with direction (sent/received) and timestamp.
 
+## Features 
+
+Gmail : by using regex will anylize mail id also if the pattern is not valid of email.id then also it will raise flag fo highlight it 
+
+give toggle to turn on and off extension 
+and if user want to turn offf extension for specific site lik whatsapp and telegram also that he will turn off 
+
+machine.
+Whats app web 
+Telegram 
+Email
+Outlook 
+yahoo mail 
+icloud mail 
+
 ## How It Works
 
 - `content.js` — injected into WhatsApp Web, queries the DOM for message elements and returns text, time, and direction
