@@ -32,7 +32,7 @@ python model/mod.py
 ```
 
 This downloads the `cybersectony/phishing-email-detection-distilbert_v2.4.1` model from Hugging Face and exports:
-- `model/model.onnx` — the ONNX model (~67 MB)
+- `model/model.onnx` — the ONNX model
 - `model/vocab.json` — tokenizer vocabulary
 - `model/config.json` — label mapping
 
