@@ -1,6 +1,6 @@
 # Aarohan-26-CSI-RAIT-IgniteX
 
-# ( will add more content later)
+# ( still one more extension need to be added )
 
 A minimal Chrome extension that reads messages from WhatsApp Web.
 
