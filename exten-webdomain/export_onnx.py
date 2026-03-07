@@ -4,29 +4,21 @@ AegisAI — Export distilbert-base-uncased-finetuned-sst-2-english to ONNX
 Source model : distilbert-base-uncased-finetuned-sst-2-english (HuggingFace)
 Target format : ONNX + int8 quantized  (Transformers.js compatible)
 Output dir   : models/phishing-url-detection/
-
 This produces the exact same file layout that Xenova/distilbert-base-uncased-sst2
 uses, so our background.js works without modification.
-
 Run: python export_onnx.py
 """
-
 import os, sys, json, shutil
-
 BASE      = r"c:\Users\RAJ SAWANT\OneDrive\Desktop\AegisAI"
 MODEL_DIR = os.path.join(BASE, "models", "phishing-url-detection")
 ONNX_DIR  = os.path.join(MODEL_DIR, "onnx")
 TMP_DIR   = os.path.join(BASE, "tmp_onnx_export")
-
 SOURCE_MODEL = "distilbert-base-uncased-finetuned-sst-2-english"
-
 print("=" * 65)
 print("  AegisAI — DistilBERT → ONNX Export Pipeline")
 print(f"  Source : {SOURCE_MODEL}")
 print(f"  Output : {MODEL_DIR}")
 print("=" * 65, flush=True)
-
-# ── Step 1: Import required libraries ────────────────────────────────────────
 print("\n[1/6] Importing libraries...", flush=True)
 try:
     from transformers import AutoTokenizer, AutoModelForSequenceClassification
@@ -39,25 +31,18 @@ try:
 except ImportError as e:
     print(f"  ERROR: {e}")
     sys.exit(1)
-
-# ── Step 2: Create directories ───────────────────────────────────────────────
 print("\n[2/6] Preparing directories...", flush=True)
 os.makedirs(MODEL_DIR, exist_ok=True)
 os.makedirs(ONNX_DIR,  exist_ok=True)
 os.makedirs(TMP_DIR,   exist_ok=True)
 print(f"  OK — {MODEL_DIR}")
-
-# ── Step 3: Download model + tokenizer from HuggingFace ──────────────────────
 print(f"\n[3/6] Downloading {SOURCE_MODEL} tokenizer & model...", flush=True)
 tokenizer = AutoTokenizer.from_pretrained(SOURCE_MODEL)
 model     = AutoModelForSequenceClassification.from_pretrained(SOURCE_MODEL)
 model.eval()
 print("  OK — model loaded")
-
-# ── Step 4: Export to ONNX (full precision float32) ──────────────────────────
 print("\n[4/6] Exporting to ONNX (float32)...", flush=True)
 fp32_path = os.path.join(TMP_DIR, "model.onnx")
-
 dummy_input = tokenizer(
     "buy cheap meds online click here",
     return_tensors="pt",
@@ -65,7 +50,6 @@ dummy_input = tokenizer(
     max_length=128,
     truncation=True,
 )
-
 with torch.no_grad():
     torch.onnx.export(
         model,
@@ -83,11 +67,8 @@ with torch.no_grad():
     )
 mb = os.path.getsize(fp32_path) / 1024 / 1024
 print(f"  OK — model.onnx  ({mb:.1f} MB)", flush=True)
-
-# ── Step 5: Quantize to int8 (model_quantized.onnx) ──────────────────────────
 print("\n[5/6] Quantizing to int8 (model_quantized.onnx)...", flush=True)
 quant_path = os.path.join(ONNX_DIR, "model_quantized.onnx")
-
 quantize_dynamic(
     model_input   = fp32_path,
     model_output  = quant_path,
@@ -97,26 +78,15 @@ quantize_dynamic(
 )
 qmb = os.path.getsize(quant_path) / 1024 / 1024
 print(f"  OK — model_quantized.onnx  ({qmb:.1f} MB)", flush=True)
-
-# ── Step 6: Write tokenizer & config files (Transformers.js format) ───────────
 print("\n[6/6] Writing tokenizer + config files...", flush=True)
-
-# tokenizer.json
 tokenizer.save_pretrained(MODEL_DIR)
 print("  OK — tokenizer files saved")
-
-# config.json — remap SST-2 labels to phishing vocabulary
 config = model.config.to_dict()
-# SST-2: 0 = NEGATIVE, 1 = POSITIVE
-# In phishing context: NEGATIVE score → suspicious, POSITIVE → safe
-# background.js reads: if label == 'NEGATIVE' → treat as phishing signal
 config["id2label"] = {"0": "NEGATIVE", "1": "POSITIVE"}
 config["label2id"] = {"NEGATIVE": 0, "POSITIVE": 1}
 with open(os.path.join(MODEL_DIR, "config.json"), "w") as f:
     json.dump(config, f, indent=2)
 print("  OK — config.json  (id2label: 0→NEGATIVE, 1→POSITIVE)")
-
-# preprocessor_config.json (Transformers.js uses this)
 pre_cfg = {
     "tokenizer_class": "BertTokenizer",
     "do_lower_case":   True,
@@ -125,11 +95,7 @@ pre_cfg = {
 with open(os.path.join(MODEL_DIR, "preprocessor_config.json"), "w") as f:
     json.dump(pre_cfg, f, indent=2)
 print("  OK — preprocessor_config.json")
-
-# ── Cleanup tmp dir ───────────────────────────────────────────────────────────
 shutil.rmtree(TMP_DIR, ignore_errors=True)
-
-# ── Summary ───────────────────────────────────────────────────────────────────
 print("\n" + "=" * 65)
 print("  Model directory:")
 for root, dirs, files in os.walk(MODEL_DIR):
@@ -139,7 +105,6 @@ for root, dirs, files in os.walk(MODEL_DIR):
         mb_f = os.path.getsize(os.path.join(root, fn)) / 1024 / 1024
         rel  = os.path.relpath(os.path.join(root, fn), MODEL_DIR)
         print(f"{pad}{rel:<45}  {mb_f:6.2f} MB")
-
 print()
 print("  ✅  ONNX (quantized int8) model ready!")
 print("  ✅  ~17-20 MB — optimal for browser inference")

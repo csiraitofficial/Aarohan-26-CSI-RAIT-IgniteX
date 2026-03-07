@@ -24,6 +24,7 @@
                 "<all_urls>"
             ],
             "js": [
+                "transformers.js",
                 "content.js"
             ],
             "css": [

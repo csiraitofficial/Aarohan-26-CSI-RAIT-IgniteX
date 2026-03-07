@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,13 +20,11 @@
             --border-color: rgba(239, 68, 68, 0.3);
             --glass-blur: blur(20px);
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             min-height: 100vh;
             background: var(--bg-darker);
@@ -40,7 +37,6 @@
             overflow: hidden;
             position: relative;
         }
-
         /* WebGL Background Canvas */
         #bg-canvas {
             position: fixed;
@@ -51,7 +47,6 @@
             z-index: -1;
             opacity: 0.4;
         }
-
         /* Ambient Danger Glow */
         body::after {
             content: '';
@@ -62,38 +57,31 @@
             animation: threat-pulse 2s ease-in-out infinite;
             box-shadow: inset 0 0 100px rgba(239, 68, 68, 0.1);
         }
-
         @keyframes threat-pulse {
-
             0%,
             100% {
                 border-color: rgba(239, 68, 68, 0.1);
             }
-
             50% {
                 border-color: rgba(239, 68, 68, 0.4);
             }
         }
-
         .container {
             max-width: 600px;
             width: 100%;
             z-index: 10;
             animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
         @keyframes slideUp {
             from {
                 opacity: 0;
                 transform: translateY(30px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-
         .glass-card {
             background: rgba(15, 23, 42, 0.7);
             backdrop-filter: var(--glass-blur);
@@ -105,7 +93,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .card-accent {
             position: absolute;
             top: 0;
@@ -115,12 +102,10 @@
             background: linear-gradient(90deg, transparent, var(--accent-danger), transparent);
             box-shadow: 0 0 15px var(--accent-danger);
         }
-
         .header {
             text-align: center;
             margin-bottom: 32px;
         }
-
         .shield-icon {
             width: 80px;
             height: 80px;
@@ -128,7 +113,6 @@
             color: var(--accent-danger);
             filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.4));
         }
-
         .badge-blocked {
             display: inline-flex;
             align-items: center;
@@ -145,7 +129,6 @@
             margin-bottom: 20px;
             text-transform: uppercase;
         }
-
         .status-blink {
             width: 8px;
             height: 8px;
@@ -154,19 +137,15 @@
             box-shadow: 0 0 8px var(--accent-danger);
             animation: blink 1.5s step-end infinite;
         }
-
         @keyframes blink {
-
             0%,
             100% {
                 opacity: 1;
             }
-
             50% {
                 opacity: 0;
             }
         }
-
         h1 {
             font-family: 'Orbitron', sans-serif;
             font-size: 32px;
@@ -175,17 +154,14 @@
             margin-bottom: 12px;
             line-height: 1.1;
         }
-
         h1 span {
             color: var(--accent-danger);
         }
-
         .desc {
             font-size: 15px;
             color: var(--text-secondary);
             line-height: 1.6;
         }
-
         .domain-display {
             background: rgba(2, 6, 23, 0.5);
             border: 1px solid rgba(239, 68, 68, 0.2);
@@ -194,7 +170,6 @@
             margin: 32px 0;
             text-align: center;
         }
-
         .domain-label {
             font-size: 9px;
             text-transform: uppercase;
@@ -203,18 +178,15 @@
             margin-bottom: 8px;
             font-weight: 700;
         }
-
         #blocked-url {
             font-family: 'Courier New', monospace;
             font-size: 14px;
             color: #fca5a5;
             word-break: break-all;
         }
-
         .intelligence-grid {
             margin-bottom: 32px;
         }
-
         .grid-header {
             font-family: 'Orbitron', sans-serif;
             font-size: 11px;
@@ -226,13 +198,11 @@
             align-items: center;
             gap: 10px;
         }
-
         .threat-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-
         .threat-item {
             background: rgba(239, 68, 68, 0.05);
             border-left: 3px solid var(--accent-danger);
@@ -243,7 +213,6 @@
             align-items: center;
             gap: 12px;
         }
-
         .tip-box {
             background: rgba(56, 189, 248, 0.1);
             border-radius: 12px;
@@ -255,12 +224,10 @@
             display: flex;
             gap: 12px;
         }
-
         .actions {
             display: flex;
             gap: 16px;
         }
-
         .btn {
             flex: 1;
             padding: 16px;
@@ -277,64 +244,52 @@
             justify-content: center;
             gap: 8px;
         }
-
         .btn-safe {
             background: var(--text-primary);
             color: var(--bg-darker);
             border: none;
         }
-
         .btn-safe:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
         }
-
         .btn-risky {
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.3);
             color: var(--accent-danger);
         }
-
         .btn-risky:hover {
             background: rgba(239, 68, 68, 0.2);
             transform: translateY(-2px);
         }
-
         .footer {
             margin-top: 32px;
             text-align: center;
             font-size: 11px;
             color: var(--text-muted);
         }
-
         .footer b {
             color: var(--accent-primary);
             letter-spacing: 1px;
         }
-
         @media (max-width: 640px) {
             .glass-card {
                 padding: 32px 24px;
             }
-
             .actions {
                 flex-direction: column;
             }
-
             h1 {
                 font-size: 24px;
             }
         }
     </style>
 </head>
-
 <body>
     <canvas id="bg-canvas"></canvas>
-
     <div class="container">
         <div class="glass-card">
             <div class="card-accent"></div>
-
             <div class="header">
                 <div class="shield-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -344,22 +299,18 @@
                         <path d="M12 16h.01"></path>
                     </svg>
                 </div>
-
                 <div class="badge-blocked">
                     <div class="status-blink"></div>
                     Vector Identified & Isolated
                 </div>
-
                 <h1>Access <span>Denied</span></h1>
                 <p class="desc">AegisAI intelligence has identified high-confidence phishing patterns on this
                     destination. Navigation suspended.</p>
             </div>
-
             <div class="domain-display">
                 <div class="domain-label">Isolated URL Vector</div>
                 <div id="blocked-url">...</div>
             </div>
-
             <div class="intelligence-grid">
                 <div class="grid-header">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -372,7 +323,6 @@
                     <div class="threat-item"><span>Neural sequence processing...</span></div>
                 </div>
             </div>
-
             <div class="tip-box" id="edu-box">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -381,16 +331,13 @@
                 <div id="edu-text">This domain uses structural obfuscation typical of credential harvesting operations.
                     Avoid all interaction.</div>
             </div>
-
             <div class="actions">
                 <button class="btn btn-safe" id="btn-back">⬅ Return to Safety</button>
                 <button class="btn btn-risky" id="btn-proceed">Bypass Shield (Danger)</button>
             </div>
         </div>
-
         <p class="footer">Securely Intercepted by <b>AEGIS AI DEFENSE</b> · Local Core v3.0</p>
     </div>
-
     <script>
         // WebGL Background
         const canvas = document.getElementById('bg-canvas');
@@ -399,12 +346,10 @@
         const setSize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
         window.addEventListener('resize', setSize);
         setSize();
-
         const dots = Array(40).fill().map(() => ({
             x: Math.random() * w, y: Math.random() * h,
             vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4
         }));
-
         const draw = () => {
             ctx.clearRect(0, 0, w, h);
             ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
@@ -420,7 +365,6 @@
             requestAnimationFrame(draw);
         };
         draw();
-
         // Data Injection
         try {
             const params = new URLSearchParams(window.location.search);
@@ -428,12 +372,10 @@
             if (raw) {
                 const res = JSON.parse(decodeURIComponent(raw));
                 document.getElementById('blocked-url').textContent = res.url || 'Unknown Vector';
-
                 const icons = {
                     suspicious_tld: '🔴', ip_address: '🌐', many_subdomains: '📛',
                     suspicious_keywords: '🔑', brand_impersonation: '🎭', homograph: '🎭'
                 };
-
                 const list = document.getElementById('flags-list');
                 if (res.flags && res.flags.length) {
                     list.innerHTML = res.flags.slice(0, 4).map(f => `
@@ -443,7 +385,6 @@
                         </div>
                     `).join('');
                 }
-
                 const eduMap = {
                     homograph: 'Character spoofing detected. This domain uses lookalike characters from other scripts to impersonate a legitimate site.',
                     brand_impersonation: 'Brand collision detected. This domain is attempting to visually clone a known legitimate institution.',
@@ -453,7 +394,6 @@
                 if (spec) document.getElementById('edu-text').textContent = eduMap[spec.type];
             }
         } catch (e) { }
-
         document.getElementById('btn-back').onclick = () => {
             // Try to go back; if no history, navigate to Gmail inbox
             if (document.referrer && !document.referrer.includes(location.origin)) {
@@ -469,5 +409,4 @@
         };
     </script>
 </body>
-
 </html>
